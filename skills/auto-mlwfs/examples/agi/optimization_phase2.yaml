@@ -1,0 +1,54 @@
+# AgI phase-2 BO: expand the boundary hit by trial-0006 and optimize primarily
+# for band/LESA quality while retaining a small localization penalty.
+# Example only: replace baseline_wannier_dir with your own completed trial.
+paths:
+  projection_dir: proj
+  band_dir: band
+  baseline_wannier_dir: optimization/trials/trial-0006
+  optimization_dir: optimization_phase2
+  fitting_config: null
+
+seedname: wannier90
+
+bo:
+  # Recommend ten concurrent candidates, but ask the user and pass their choice
+  # to `propose --batch-size`; this value is documentation, not authorization.
+  recommended_batch_size: 10
+  max_evaluations: null
+  random_seed: 20260725
+  acquisition_function: EI
+  batch_strategy: cl_min
+
+search:
+  outer_min_radius_ev: 2.0
+  outer_max_radius_ev: 3.0
+  frozen_min_inward_ev: 1.5
+  frozen_max_inward_ev: 2.0
+  min_frozen_width_fraction: 0.25
+  min_frozen_width_ev: 0.20
+  coordinate_tolerance_ev: 0.001
+  proposal_pool_factor: 16
+
+constraints:
+  outer_min_states_per_k: num_wann
+  frozen_max_states_per_k: num_wann_minus_one
+  require_fermi_inside_frozen: true
+
+loss:
+  sigma_ev: 0.001
+  neutral_bucket_sigma_multiplier: 5.0
+  unmatched_error_ev: 5.0
+  band_weight: 0.85
+  spread_weight: 0.15
+  lesa_anchor_failure_weight: 0.50
+  normalization_floor_band_ev: 0.001
+  normalization_floor_spread_a2: 0.001
+  failed_trial_penalty: 100.0
+
+lesa:
+  enabled: true
+  stop_on_pass: true
+
+execution:
+  input_mode: symlink
+  wannier_stdout: "{{ seedname }}.wout"

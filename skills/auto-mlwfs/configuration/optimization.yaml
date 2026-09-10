@@ -1,0 +1,61 @@
+# Four-dimensional Bayesian optimization around the physics-derived window.
+paths:
+  projection_dir: proj
+  band_dir: band
+  baseline_wannier_dir: wann
+  optimization_dir: optimization
+  # null uses the bundled fitting.yaml; an override is relative to --root.
+  fitting_config: null
+
+seedname: wannier90
+
+bo:
+  # Recommend ten concurrent candidates, but ask the user and pass their choice
+  # to `propose --batch-size`; this value is documentation, not authorization.
+  recommended_batch_size: 10
+  max_evaluations: null
+  random_seed: 20260724
+  acquisition_function: EI
+  batch_strategy: cl_min
+
+search:
+  # Outer-window edges can move both inward and outward.
+  outer_min_radius_ev: 1.5
+  outer_max_radius_ev: 1.5
+
+  # The physics guess is the largest safe frozen window. BO explores inward
+  # from that window, without imposing a monotonic trajectory.
+  frozen_min_inward_ev: 1.0
+  frozen_max_inward_ev: 1.0
+  min_frozen_width_fraction: 0.50
+  min_frozen_width_ev: 0.20
+
+  # Candidate deduplication and constraint-repair resolution.
+  coordinate_tolerance_ev: 0.001
+  proposal_pool_factor: 12
+
+constraints:
+  outer_min_states_per_k: num_wann
+  frozen_max_states_per_k: num_wann_minus_one
+  require_fermi_inside_frozen: true
+
+loss:
+  # Paper band-discrepancy term: Eq. (6), sigma = 1 meV.
+  sigma_ev: 0.001
+  neutral_bucket_sigma_multiplier: 5.0
+  unmatched_error_ev: 5.0
+
+  # Equal normalized contribution from band discrepancy and mean spread.
+  band_weight: 0.50
+  spread_weight: 0.50
+  normalization_floor_band_ev: 0.001
+  normalization_floor_spread_a2: 0.001
+  failed_trial_penalty: 100.0
+
+lesa:
+  enabled: true
+  stop_on_pass: true
+
+execution:
+  input_mode: symlink
+  wannier_stdout: "{{ seedname }}.wout"

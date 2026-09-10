@@ -1,0 +1,36 @@
+# LESA fitting-quality analysis for DFT/Wannier band comparison.
+
+paths:
+  eigenval_file: band/EIGENVAL
+  vasp_outcar: band/OUTCAR
+  wannier_file: wann/wannier90_band.dat
+  window_summary_file: wann/window_summary.json
+  output_dir: outputs
+  summary_name: fitting_lesa_summary.json
+  report_name: fitting_lesa_report.txt
+
+lesa:
+  # Number of consecutive DFT eigenvalues around E_F used as the local spectrum
+  # fingerprint at each k point.
+  anchor_size: 10
+  # Per-eigenvalue tolerance for the relative spectrum match, in eV.
+  tolerance_ev: 0.01
+  # DFT anchor selection is centered on this relative energy.
+  fermi_level_ev: 0.0
+  # If true, ambiguous anchors do not seed window fitting.
+  require_unique_anchor: true
+
+windows:
+  frozen_window:
+    enabled: true
+    # The sole LESA fitting region is the initial physics frozen window.
+    source: initial_frozen_window
+    tolerance_ev: 0.08
+
+decision:
+  # LESA success means unique anchors unless lesa.require_unique_anchor is false.
+  min_anchor_success_ratio: 0.95
+  max_anchor_failed_ratio: 0.10
+  max_anchor_ambiguous_ratio: 0.20
+  min_frozen_window_fitting_ratio: 0.95
+  max_offset_std_ev: 0.10

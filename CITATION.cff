@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Please cite this software when using Auto MLWFs in your research."
+type: software
+title: "Auto MLWFs"
+authors:
+  - name: "sqwang2"
+repository-code: "https://github.com/sqwang2/auto-mlwfs"
+url: "https://github.com/sqwang2/auto-mlwfs"
+license: MIT

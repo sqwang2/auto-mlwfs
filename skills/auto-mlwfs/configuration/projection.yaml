@@ -1,0 +1,48 @@
+# Rules for selecting Wannier projections from VASP PDOS.
+# The script auto-detects metal vs semiconductor from the VASP band gap.
+
+paths:
+  vasprun: vasprun.xml
+  output_dir: outputs
+  csv_name: dos_projected.csv
+  summary_name: projection_summary.json
+  recommendations_name: projections.txt
+  plot_name: DOS.png
+
+classification:
+  # gap <= this value is treated as metallic.
+  metal_gap_tolerance_ev: 0.05
+
+analysis:
+  # Select the connected nonzero-DOS manifold around E_F. Fixed Fermi-centered
+  # windows are intentionally unsupported because they do not scale across
+  # materials. Each segment is expanded by gap/2 + padding before merging.
+  mode: dos_manifold
+  zero_density_tolerance: 0.0
+  manifold_padding_ev: 0.1
+
+selection:
+  # Ignore tiny integrated weights to avoid numerical noise.
+  min_integrated_weight: 1.0e-6
+  # Absolute DOS weight per atom. The s/p/d values reproduce the reference
+  # autoconstruction thresholds; f follows the same 0.4-per-orbital scaling.
+  absolute_weight_per_atom:
+    s: 0.4
+    p: 1.2
+    d: 2.0
+    f: 2.8
+
+plot:
+  x_label: Energy (eV)
+  y_label: PDOS (States/eV)
+  legend_loc: best
+  legend_fs: 15
+  label_fs: 15
+  tick_fs: 15
+  figsize: [6.0, 4.2]
+  dpi: 300
+  # Plot energy relative to E_F, matching common DOS plots.
+  energy_zero: fermi
+  # If null, xlim is chosen from the analysis window with padding.
+  xlim: null
+  ylim: null
